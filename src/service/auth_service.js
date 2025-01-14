@@ -1,7 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import User from "../modals/user_modal.js";
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
 
 export const register_user = async (email, hash_pass) => {
   console.log(email, hash_pass, "dds");
@@ -10,7 +10,6 @@ export const register_user = async (email, hash_pass) => {
     console.log("Email already exists:", email);
     throw new Error("Email already exists. Please use a different email.");
   }
-
   const user = User({
     email: email,
     password: hash_pass,

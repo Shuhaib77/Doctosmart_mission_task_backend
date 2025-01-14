@@ -1,8 +1,13 @@
 import User from "../modals/user_modal.js";
-import { googleVerify, loginuser, register_user } from "../service/auth_service.js";
+import {
+  googleVerify,
+  loginuser,
+  register_user,
+} from "../service/auth_service.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import dotenv from "dotenv";
+dotenv.config();
 
 export const register = async (req, res) => {
   const { email, password } = req.body;
@@ -13,17 +18,14 @@ export const register = async (req, res) => {
     return res.status(404).json({ message: "email and password requird" });
   }
 
-    const data = await register_user(email, hash_pass);
-    if (!data) {
-      return res.status(200).json({ message: "lregister success full" });
-    }
-    res.status(404).json({ message: "user registration failed" });
+  const data = await register_user(email, hash_pass);
+  if (!data) {
+    return res.status(400).json({ message: "lregister success full" });
+  }
+  res.status(200).json({ message: "user registration failed" });
 
-    console.log(error);
-  
+  console.log(error);
 };
-
-
 
 export const googleauth = async (req, res) => {
   const { idToken } = req.body;
@@ -32,14 +34,18 @@ export const googleauth = async (req, res) => {
 
   let user = await User.findOne({ email });
   if (!user) {
-    return user = await User.create({ email: email, name: name, image: picture });
+    return (user = await User.create({
+      email: email,
+      name: name,
+      image: picture,
+    }));
   }
   const payload = {
     email: email,
     picture: picture,
     name: name,
   };
-  const token = jwt.sign(payload, secretkey);
+  const token = jwt.sign(payload, process.env.secretkey);
   console.log(token);
 
   return res
@@ -56,7 +62,7 @@ export const login = async (req, res) => {
     password: password,
   };
 
-  const token = jwt.sign(payload, secretkey);
+  const token = jwt.sign(payload, process.env.secretkey);
   return res
     .status(200)
     .json({ message: "user login success full", user: user, token: token });
